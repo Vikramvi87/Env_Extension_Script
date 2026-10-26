@@ -1,26 +1,56 @@
-# AppScan Environment File Extension Discovery
+# Automated HCL AppScan `.env` Extension Configurator
 
-A custom Python utility designed to automate the discovery of environment (`.env`) file extensions for AppScan configurations. 
+This repository contains a Python utility script designed to automate the discovery and configuration of environment (`.env`) file extensions for HCL AppScan Source. 
 
-While manual configuration is typically recommended for handling `.env` file extensions in AppScan, this script is provided as a supplementary tool to help streamline your workflow, save time, and ease the configuration process.
+As per the standard HCL AppScan product design, defining the scanning scope for custom `.env` file variants (e.g., `.env.SIT`, `ee.env.uat.prod`) requires manual updates to configuration files. This script eliminates that manual effort by automatically scanning your source code, extracting unique extensions, and securely updating the necessary XML configurations.
 
-## ⚠️ Important Disclaimer
-**Please note:** This script is entirely optional and is provided "as-is" as a personal courtesy to increase convenience. It is **not** an official part of the AppScan product offerings and is not officially supported by the product team. Use it at your own discretion.
+## 🌟 Features
 
-## Prerequisites
-* Python 3.x installed on your system.
-* Basic understanding of your project's directory structure and AppScan configuration.
+* **Automated Discovery:** Recursively scans your source code directories to find all `.env` related files and extracts the unique environment tags (e.g., `SIT`, `prod`, `txt`).
+* **Secure Backups:** Automatically creates a timestamped backup of your AppScan XML configuration files (e.g., `file_extensions_backup_20261026_203000.xml`) before making any modifications, ensuring a safe rollback path.
+* **Idempotent Updates (Unique Check):** Verifies existing configurations to prevent duplicate XML entries. It only adds extensions that are missing from the `<FileExtensionSet name="iac">` node.
+* **Audit Logging:** Generates a detailed operational log (`appscan_extension_update_log.txt`) in the scanned directory and automatically opens it in Notepad for immediate review.
 
-## What This Script Does
-* Automatically scans the specified target directory.
-* Identifies files functioning as environment files.
-* Extracts the relevant extensions to easily integrate them into your AppScan configuration settings.
+## ⚙️ Target Configuration Files
 
-## Usage
+The script automatically locates and updates the following HCL AppScan configuration files:
+1. `C:\ProgramData\HCL\AppScanSource\ltd\file_extensions.xml` (auto-detects singular `file_extension.xml` as well)
+2. `C:\Program Files\HCL\AppScanSource\engine\config\file_extensions.xml`
 
-1. Clone this repository or download the script directly.
-2. Open your terminal or command prompt.
-3. Run the script using Python, passing your target directory as an argument (modify based on your script's specific parameters):
+## 📋 Prerequisites
 
-```bash
-python [script_name.py] /path/to/your/project/directory
+* **Operating System:** Windows (due to hardcoded AppScan installation paths).
+* **Python:** Python 3.x installed on your machine.
+* **Permissions:** **Administrator privileges** are required to modify files in the `C:\Program Files` and `C:\ProgramData` directories.
+
+## 🚀 How to Run
+
+1. Clone this repository or download the `update_appscan.py` script.
+2. Open your Windows Command Prompt **as Administrator**.
+   *(Right-click Start > Command Prompt (Admin) OR search `cmd`, right-click, and select "Run as administrator")*
+3. Navigate to the directory where you saved the script:
+   ```cmd
+   cd path\to\script\directory
+   ```
+4. Execute the script:
+   ```cmd
+   python update_appscan.py
+   ```
+5. When prompted, paste the full path to the source code folder you want to scan and press **Enter**.
+
+## 📄 Logs and Output
+
+Once the script finishes executing, it will automatically open a file named `appscan_extension_update_log.txt`. This audit log contains:
+* The exact directories scanned.
+* A list of all unique `.env` extensions discovered.
+* Status of the automated backups (success/failure with file paths).
+* A line-by-line status of which extensions were newly added and which were skipped to prevent duplicates.
+
+## 🛠️ Workflow Diagram
+
+*(Note: Add your workflow diagram image to the repository and update the image path below)*
+
+![Workflow Diagram](path/to/your/diagram.png)
+
+---
+**Disclaimer:** This is a custom automation utility provided to assist with configuration management and is not an official HCL product offering.
